@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>College Timetable Scheduler</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="College Timetable Scheduler home">
+      <span class="brand-mark" aria-hidden="true">CT</span>
+      <span>
+        <strong>College Timetable</strong>
+        <small>Academic scheduling</small>
+      </span>
+    </a>
+    <div class="topbar-actions">
+      <span id="clash-status" class="status-badge" role="status">Checking timetable…</span>
+      <button id="generate-button" class="button button-primary" type="button">Generate Timetable</button>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Timetable sections">
+    <button class="tab-button active" type="button" data-tab="timetable-tab" aria-selected="true">Timetable</button>
+    <button class="tab-button" type="button" data-tab="faculty-tab" aria-selected="false">Faculty Hours</button>
+    <button class="tab-button" type="button" data-tab="data-tab" aria-selected="false">Upload / Data</button>
+    <button class="tab-button" type="button" data-tab="checks-tab" aria-selected="false">Graph &amp; Checks</button>
+  </nav>
+
+  <main class="page">
+    <p id="notice" class="notice" role="status" hidden></p>
+
+    <section id="timetable-tab" class="tab-panel active" aria-labelledby="timetable-heading">
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">Weekly schedule</p>
+          <h1 id="timetable-heading">Timetable</h1>
+          <p class="muted">Review classes by grade, division, faculty, or room.</p>
+        </div>
+        <div class="export-actions">
+          <button id="export-csv" class="button button-outline" type="button">Export CSV</button>
+          <button id="export-html" class="button button-outline" type="button">Export HTML</button>
+          <button id="print-timetable" class="button button-outline" type="button">Print</button>
+        </div>
+      </div>
+
+      <section class="card filter-card" aria-label="Timetable filters">
+        <label>
+          <span>Grade</span>
+          <select id="grade-filter">
+            <option value="FY">FY</option>
+            <option value="SY">SY</option>
+            <option value="TY">TY</option>
+            <option value="LY">LY</option>
+          </select>
+        </label>
+        <label>
+          <span>View Mode</span>
+          <select id="view-mode">
+            <option value="division">By Division</option>
+            <option value="faculty">By Faculty</option>
+            <option value="room">By Room</option>
+          </select>
+        </label>
+        <label class="target-filter">
+          <span id="target-label">Division</span>
+          <select id="target-filter"></select>
+        </label>
+      </section>
+
+      <section class="card timetable-card" aria-label="Weekly timetable grid">
+        <div class="table-scroll">
+          <table class="timetable-grid">
+            <thead>
+              <tr>
+                <th scope="col">Day</th>
+                <th scope="col">P1 <small>08:30–09:30</small></th>
+                <th scope="col">P2 <small>09:30–10:30</small></th>
+                <th scope="col">P3 <small>10:30–11:30</small></th>
+                <th scope="col" class="lunch-heading">Lunch<br><small>11:30–12:15</small></th>
+                <th scope="col">P4 <small>12:15–13:15</small></th>
+                <th scope="col">P5 <small>13:15–14:15</small></th>
+                <th scope="col">P6 <small>14:15–15:15</small></th>
+              </tr>
+            </thead>
+            <tbody id="timetable-body"></tbody>
+          </table>
+        </div>
+      </section>
+      <p class="grid-note"><span class="lab-key"></span> Labs occupy two consecutive periods.</p>
+    </section>
+
+    <section id="faculty-tab" class="tab-panel" aria-labelledby="faculty-heading" hidden>
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">Teaching load</p>
+          <h1 id="faculty-heading">Faculty Hours</h1>
+          <p class="muted">Weekly teaching assignments compared with each faculty member’s cap.</p>
+        </div>
+      </div>
+      <section class="card table-card">
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Assigned / Weekly Cap</th>
+                <th scope="col">Theory Hours</th>
+                <th scope="col">Lab Hours</th>
+                <th scope="col">Grades Taught</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody id="faculty-hours-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <section id="data-tab" class="tab-panel" aria-labelledby="data-heading" hidden>
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">College information</p>
+          <h1 id="data-heading">Upload / Data</h1>
+          <p class="muted">Use your current faculty loads, room list, or complete college JSON.</p>
+        </div>
+      </div>
+      <section class="card upload-card">
+        <div>
+          <h2>Upload college data</h2>
+          <p class="muted">Upload faculty_loads.csv, rooms.csv, or sample_college.json. The timetable regenerates after import.</p>
+        </div>
+        <div class="upload-controls">
+          <input id="data-file" type="file" accept=".csv,.json,text/csv,application/json">
+          <button id="upload-button" class="button button-primary" type="button">Upload &amp; Regenerate</button>
+          <button id="load-sample-button" class="button button-outline" type="button">Load Sample College Data</button>
+          <button id="export-data-button" class="button button-outline" type="button">Download College JSON</button>
+        </div>
+      </section>
+      <section class="summary-grid" aria-label="College data summary">
+        <article class="summary-card"><span>Total Grades</span><strong id="summary-grades">—</strong></article>
+        <article class="summary-card"><span>Divisions</span><strong id="summary-divisions">—</strong></article>
+        <article class="summary-card"><span>Faculty</span><strong id="summary-faculty">—</strong></article>
+        <article class="summary-card"><span>Rooms</span><strong id="summary-rooms">—</strong></article>
+        <article class="summary-card"><span>Sessions</span><strong id="summary-sessions">—</strong></article>
+      </section>
+      <section class="card format-card">
+        <h2>File formats</h2>
+        <p><strong>faculty_loads.csv</strong> contains one row per class or batch assignment, including weekly hours, lab flag, and faculty weekly cap.</p>
+        <p><strong>rooms.csv</strong> lists room ID, name, room type, capacity, building, and floor.</p>
+        <p><strong>sample_college.json</strong> contains the complete years, divisions, batches, subjects, faculty, rooms, and assignments.</p>
+      </section>
+    </section>
+
+    <section id="checks-tab" class="tab-panel" aria-labelledby="checks-heading" hidden>
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">Scheduling method</p>
+          <h1 id="checks-heading">Graph &amp; Checks</h1>
+          <p class="muted">Every class is a node. An edge connects sessions that cannot happen at the same time.</p>
+        </div>
+      </div>
+      <section class="card graph-explainer">
+        <h2>How graph colouring builds a timetable</h2>
+        <p>DSATUR places the most constrained session first. Faculty, division, batch, and room rules define which sessions conflict, while the independent validator checks the finished weekly schedule.</p>
+      </section>
+      <section class="metrics-grid" aria-label="Graph colouring metrics">
+        <article class="metric-card"><span>Total Sessions (Nodes)</span><strong id="metric-nodes">—</strong></article>
+        <article class="metric-card"><span>Total Conflicts (Edges)</span><strong id="metric-edges">—</strong></article>
+        <article class="metric-card"><span>Time Slots Used (Colours)</span><strong id="metric-colours">—</strong></article>
+        <article class="metric-card"><span>Algorithm Used</span><strong id="metric-algorithm">DSATUR</strong></article>
+      </section>
+      <section class="card checks-card">
+        <h2>Schedule checks</h2>
+        <p class="muted">The independent validator checks faculty, class, room, and weekly-hour rules.</p>
+        <ul id="checklist" class="checklist"></ul>
+      </section>
+    </section>
+  </main>
+</body>
+</html>

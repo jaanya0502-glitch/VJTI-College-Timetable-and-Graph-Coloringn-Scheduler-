@@ -1,0 +1,11 @@
+room_id,name,room_type,capacity,building,floor
+CR_101,Lecture Hall 101,CLASSROOM,70,Main Block,1
+CR_102,Lecture Hall 102,CLASSROOM,70,Main Block,1
+CR_201,Lecture Hall 201,CLASSROOM,70,Main Block,2
+CR_202,Lecture Hall 202,CLASSROOM,70,Main Block,2
+CR_301,Lecture Hall 301,CLASSROOM,70,Main Block,3
+CR_302,Lecture Hall 302,CLASSROOM,80,Main Block,3
+LAB_CS1,Programming Lab 1,COMPUTER_LAB,30,IT Wing,1
+LAB_CS2,Systems Lab 2,COMPUTER_LAB,30,IT Wing,1
+LAB_AI,AI and Data Lab,COMPUTER_LAB,30,IT Wing,2
+LAB_NET,Networks Lab,COMPUTER_LAB,30,IT Wing,2
