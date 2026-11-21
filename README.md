@@ -1,3 +1,9 @@
+# Team Members
+- Jaanya Jain
+- Shraddha Savale
+- Chakshu Patel
+- Nia Dmello
+
 # College Timetable Scheduler
 
 A timetable generator for a four-year engineering college (FY, SY, TY, LY). It models scheduling as a **graph colouring** problem, assigns time slots with the **DSATUR** heuristic, allocates rooms, and then verifies the result with an **independent validator**. A small web interface lets you generate, inspect, upload data for, and export timetables.
